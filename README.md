@@ -18,7 +18,7 @@ were options (`gforth`, `DuskOS`, `Min3rd`, `pforth`, ...).
 
 After experimenting I settled on
 [`pforth`](https://www.softsynth.com/pforth/)
-[repository](https://github.com/philburk/pforth/). It builds on
+([repository](https://github.com/philburk/pforth/)). It builds on
 an ARM Mac and runs well.
 
 The only obvious area of incompatibility is file inclusion and
