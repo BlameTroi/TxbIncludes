@@ -1,4 +1,4 @@
-\ TxbAnsiTerminal.f -- Ansi Terminal Control (subset) - T.Brumley
+\ TxbAnsiTerminal.fth -- Ansi Terminal Control (subset) - T.Brumley
 
 anew task-TxbAnsiTerminal.fth
 
@@ -180,12 +180,10 @@ anew task-TxbAnsiTerminal.fth
 : ctype.cyan ( str len -- )
     count type.cyan ;
 
-
-cr
-cr c" am i red?" ctype.red
-cr c" am i green?" ctype.green
-cr s" am i blue?" type.blue
-cr s" am i cyan?" type.cyan
-cr
+\ cr c" am i red?" ctype.red
+\ cr c" am i green?" ctype.green
+\ cr s" am i blue?" type.blue
+\ cr s" am i cyan?" type.cyan
+\ cr
  
 \ end of TxbAnsiTerminal.fth
