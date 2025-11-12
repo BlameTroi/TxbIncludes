@@ -3,8 +3,8 @@
 anew task-TxbAnsiTerminal.fth
 
 \ Colored text in terminals means using ANSI control sequences.
-\ While mining some of my Pascal ANSI support I found the best/most
-\ readable documentation for ANSI controls:
+\ While mining some of my Pascal ANSI support code I found the
+\ best/most readable documentation for ANSI controls at:
 \
 \ https://nicholas-morris.com/articles/ansi-codes
 \
@@ -26,47 +26,65 @@ anew task-TxbAnsiTerminal.fth
 \ TODO:
 \
 \ - Take a serious look at the string idea above.
-\ 
+\
 \ - Number to character digit conversion for inserting parameters
-\   into several sequences. 
+\   into several sequences.
 
-\ See sgr.(f|b)g.* for the 4 bit color mappings and an ability
-\ to do rgb coloring.
 
-\ DEC (private) control functions.
+\ These are control or directive functions. While the distinction
+\ appears to be meaningless today, some of them were documented
+\ as being "private" or "DEC" specific.
+\
+\ These words expect nothing on the stack.
 
-: ansi.dec.sc     27 emit '7' emit ; \ save cursor
-: ansi.dec.sr     27 emit '8' emit ; \ restore cursor
+: ansi.cursor.save     27 emit '7' emit ; \ push position
+: ansi.cursor.restore  27 emit '8' emit ; \ pop position
+: ansi.cursor.show     27 emit '?' emit '2' emit '5' emit 'h' emit ;
+: ansi.cursor.ide      27 emit '?' emit '2' emit '5' emit 'l' emit ;
+: ansi.cursor.home     27 emit 'H' emit ; \ 1,1
+: ansi.erase.eos       27 emit 'J' emit ; \ end of screen
+: ansi.erase.eol       27 emit 'K' emit ; \ end of line
 
-: ansi.dec.cusor.show 27 emit '?' emit '2' emit '5' emit 'h' emit ;
-: ansi.dec.cusor.hide 27 emit '?' emit '2' emit '5' emit 'l' emit ;
-
-: ansi.cursor.home 27 emit 'H' emit ;
-: ansi.erase.eos   27 emit 'J' emit ;
-: ansi.erase.eol   27 emit 'K' emit ;
 
 \ Control Sequences
 \
-\ CSI p...p i...i f
-\ p...p are parameter bytes, $30-$3f
-\ i...i are intermediate bytes, $20-$2f
-\ f final byte, $40-$7e ($70-$7e are private)
+\ The general format is:
 \
-\ so \e[1;3;4;35m means:
-\ 
+\ introducer  p...p i...i f
+\
+\ Where:
+\
+\ introducer is one of SGC, SCI, or CSI.
+\ p...p      are parameter bytes, $30-$3f
+\ i...i      are intermediate bytes, $20-$2f
+\ f          final byte, $40-$7e ($70-$7e are private)
+\
+\ Multiple parameter or intermediate items are delimited by
+\ semicolons.
+\
+\ so \e[1;3;4;35m is:
+\
 \    \e[       CSI        control sequence introducer
 \    1;3;4;35  arguments  bold italic underlined magenta
 \    m         function   select graphics rendition
+\
+\ So far only the sequenced that don't require numeric
+\ parameters are implemented.
+\
+\ These words expect nothing on the stack.
 
-\ Preludes, or "introducers"
+\ Markers and delimiters.
 
 : ansi.sgc        27 emit 'Y' emit ;     \ single graphic character introducer
 : ansi.sci        27 emit 'Z' emit ;     \ single character introducer
 : ansi.csi        27 emit '[' emit ;     \ control sequence introducer
-
 : ansi.delim      ';' emit ;
 
+
 \ ANSI control fuctions
+\
+\ These move the cursor. Some could take counts but I have not
+\ implemented them yet.
 
 : ansi.cuu        ansi.csi 'A' emit ;   \ cursor up (def 1)
 : ansi.cuu.n  1 abort" NOT IMPLEMENTED" ;
@@ -76,28 +94,44 @@ anew task-TxbAnsiTerminal.fth
 : ansi.cub        ansi.csi 'D' emit ;   \ cursor backward
 : ansi.cnl        ansi.csi 'E' emit ;   \ cursor next line
 : ansi.cpl        ansi.csi 'F' emit ;   \ cursor previous line
-\ CSI row ; col H
+
+\ Move the cursor to a specific row and column. CSI row ; col H
 : ansi.cup    ( row col -- ) 2drop 1 abort " NOT IMPLEMENTED" ;
+
 \ erase screen current to end, beginning to current, or full
 : ansi.ed.from    ansi.csi '0' emit 'J' emit ;
-: ansi.ed.to      ansi.csi '1' emit 'J' emit ;     
+: ansi.ed.to      ansi.csi '1' emit 'J' emit ;
 : ansi.ed         ansi.csi '2' emit 'J' emit ;
+
 \ erase line current to end, beginning to current, or full
 : ansi.el.from    ansi.csi '0' emit 'K' emit ;
-: ansi.el.to      ansi.csi '1' emit 'K' emit ;     
+: ansi.el.to      ansi.csi '1' emit 'K' emit ;    
 : ansi.el         ansi.csi '2' emit 'K' emit ;
 
 \ Select Graphics Rendition
 \
-\ Use these to assemble a sequence to modify the text
-\ display.
-\ 
-\ CSI something ; something SGR
+\ Use these to assemble a sequence to modify the text display.
+\ Like a subset of emacs font faces.
 \
-\ example: `ansi.csi sgr.bright ansi.delim sgr.fg.red ansi.sgr`
- 
+\ CSI p...p SGR
+\
+\ Where:
+\
+\ CSI     is the introducer
+\ p...p   are parameters, delimited by semicolons
+\ SGR     is 'm'
+\
+\ For example, for bright red forground text:
+\
+\ `ansi.csi sgr.bright ansi.delim sgr.fg.red ansi.sgr`
+\
+\ Most of these use the 4 bit (0-7) ANSI color slots. Mixing
+\ colors is described later.
+\
+\ These words expect nothing on the stack.
+
 : ansi.sgr        'm' emit ;       \ oddly enough, the last thing
- 
+
 : sgr.default     '0' emit ;
 : sgr.bright      '1' emit ;       \ bold/bright/insensified
 : sgr.no.bright   '2' emit '2' emit ;
@@ -130,60 +164,57 @@ anew task-TxbAnsiTerminal.fth
 \ if needed, 90-99 bright foreground with no extended or default
 \           100-109 bright background with no extended or default
 
+
+\ Select Graphic Rendition with color mixing
+\
+\ From the sgr.?b.* above, the extended (digit 8) command allows
+\ for custom colors.
+\
 \ Extended colors (3|4)8; 2;r;g;b or 5;s
-\ need to figure out how to emit multi digit strings
-\ : sgr.fg.rgb ( r g b -- ) rot ( g b r ) 
+\
+\ Where r, g, and b are 0-255
+\ and   s           is an index into a color table (88 or 256 entries)
+\
+\ I don't expect to implement these, but if I did the rgb words
+\ would be:
+\
+\ : sgr.fg.rgb ( r g b -- )
 \ : sgr.bg.rgb
 
 
+\ Frequently used helpers
+\
 \ Things I expect to use often enough to give friendlier names:
 \ Change 'ink' colors and provide string prints helpers for
 \ command line output. More colors and faces can be added
 \ as needed.
 
-: text.red ( -- )
-    ansi.csi sgr.fg.red ansi.sgr ;
+\ Set to a specific color or back to default.
+\ All of these ( -- )
+: text.red     ansi.csi sgr.fg.red ansi.sgr ;
+: text.green   ansi.csi sgr.fg.green ansi.sgr ;
+: text.blue    ansi.csi sgr.fg.blue ansi.sgr ;
+: text.cyan    ansi.csi sgr.fg.cyan ansi.sgr ;
+: text.default ansi.csi sgr.fg.default ansi.sgr ;
+       
+\ These render a string in color and then return to default settings.
+\ These ( str len -- )
+: type.red    text.red type text.default ;
+: type.green  text.green type text.default ;
+: type.blue   text.blue type text.default ;
+: type.cyan   text.cyan type text.default ;
 
-: text.green ( -- )
-    ansi.csi sgr.fg.green ansi.sgr ;
-
-: text.blue ( -- )
-    ansi.csi sgr.fg.blue ansi.sgr ;
-
-: text.cyan ( -- )
-    ansi.csi sgr.fg.cyan ansi.sgr ;
-
-: text.default ( -- )
-    ansi.csi sgr.fg.default ansi.sgr ;
-        
-: type.red ( str len -- )
-    text.red type text.default ;
-    
-: type.green ( str len -- )
-    text.green type text.default ;
-
-: type.blue ( str len -- )
-    text.blue type text.default ;
-
-: type.cyan ( str len -- )
-    text.cyan type text.default ;
-
-: ctype.red ( cstr -- )
-    count type.red ;
-
-: ctype.green ( cstr -- )
-    count type.green ;
-
-: ctype.blue ( str len -- )
-    count type.blue ;
-
-: ctype.cyan ( str len -- )
-    count type.cyan ;
+\ These render a string in color and then return to default settings.
+\ These ( cstr -- )
+: ctype.red  count type.red ;
+: ctype.green count type.green ;
+: ctype.blue  count type.blue ;
+: ctype.cyan  count type.cyan ;
 
 \ cr c" am i red?" ctype.red
 \ cr c" am i green?" ctype.green
 \ cr s" am i blue?" type.blue
 \ cr s" am i cyan?" type.cyan
 \ cr
- 
+
 \ end of TxbAnsiTerminal.fth
