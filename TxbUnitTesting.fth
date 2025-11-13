@@ -1,6 +1,6 @@
 \ TxbUnitTesting.fth -- Simple unit testing -- T.Brumley
 
-include TxbAnsiTerminal.fth
+include? task-TxbAnsiTerminal.fth TxbAnsiTerminal.fth
 
 anew task-TxbUnitTesting.fth
 
@@ -82,6 +82,21 @@ variable unit.errored      \ not used yet, errors/exceptions
         s" FAILED " type.red
         ." wanted " unit.as.bool type \ g -- , print what we wanted
         ."  got " unit.as.bool type   \   -- , and what we got
+    then ;
+
+\ unit.test.n compares results as integers.
+: unit.test.n ( got str len wanted -- , report test result )
+    -rot cr ." Test: " type space    \ got wanted --
+    2dup                             \ g w g w --
+    = if
+        unit.test.passed             \ g w -- , count passed
+        s" passed" type.green
+        2drop                        \ discard
+    else
+        unit.test.failed             \ g w -- , count failed
+        s" FAILED " type.red
+        ." wanted " .                \ g -- , print what we wanted
+        ."  got " .                  \   -- , and what we got
     then ;
 
 \ unit.test.reset
