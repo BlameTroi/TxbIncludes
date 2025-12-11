@@ -79,9 +79,9 @@
 \ I'm not worried about move vs cmove vs cmove> semantics.
 \ If they're broken, it's nothing I broke.
 
-CREATE s1b8 8 ALLOT
+CREATE S1B8 8 ALLOT
 : s1b8 s1b8 8 ;
-CREATE s2b16 16 ALLOT
+CREATE S2B16 16 ALLOT
 : s2b16 s2b16 16 ;
 
 : RESET.SAFE.MOVE.DATA ( -- )
