@@ -36,11 +36,25 @@
 \ 
 
 \ Reporting
-VARIABLE unit.passed       \ how many have we run
-VARIABLE unit.failed       \ tests that did not pass
-VARIABLE unit.errored      \ not used yet, errors/exceptions
 
-: unit.test.reset ( -- )
+VARIABLE unit.passed       ( how many have we run )
+VARIABLE unit.failed       ( tests that did not pass )
+VARIABLE unit.errored      ( not used yet, errors/exceptions )
+VARIABLE unit.stack        ( count stack not cleared )
+
+\ Empty the stack after checking for dangling items. Prints
+\ each item if any are left while clearing.
+
+: UNIT.TEST.STACK? ( -- )
+   depth if
+      cr s" Stack not cleared: " type.red depth . cr
+      depth 0 ?do cr . loop cr
+      unit.stack dup @ 1+ swap !
+   then ;
+
+: UNIT.TEST.RESET ( -- )
+   unit.test.stack?
+   0 unit.stack !
    0 unit.passed !
    0 unit.failed !
    0 unit.errored ! ;
@@ -50,7 +64,10 @@ VARIABLE unit.errored      \ not used yet, errors/exceptions
    s" Failed " type.red unit.failed @ . cr
    s" Passed " type.green unit.passed @ . cr
    s" Errored " type.cyan unit.errored @ . cr
-   ." Total of " unit.failed @ unit.passed @ + . ." tests." cr ;
+   ." Total of " unit.failed @ unit.passed @ + . ." tests." cr
+   unit.stack @ if
+      s" Times the stack was not cleared " type.red unit.stack @ . cr
+   then ;
     
 : UNIT.TEST.PASSED ( -- )
    unit.passed dup @ 1+ swap ! ;
@@ -62,6 +79,7 @@ VARIABLE unit.errored      \ not used yet, errors/exceptions
    unit.errored dup @ 1+ swap ! ;
 
 \ Convert flag to string
+
 : UNIT.AS.BOOL ( flag -- str len , for reporting )
    if   s" True"
    else s" False"
@@ -71,6 +89,7 @@ VARIABLE unit.errored      \ not used yet, errors/exceptions
 
 \ unit.test.bool compares results as booleans. The results
 \ are forced to -1 for true and 0 for false.
+
 : UNIT.TEST.BOOL ( got str len wanted -- , report result )
    -rot cr ." Test: " type space   \ got wanted --
    0= 0= swap 0= 0= swap           \ to true false --
@@ -87,6 +106,7 @@ VARIABLE unit.errored      \ not used yet, errors/exceptions
    then ;
 
 \ unit.test.n compares results as integers.
+
 : UNIT.TEST.N ( got str len wanted -- , report result )
    -rot cr ." Test: " type space   \ got wanted --
    2dup                            \ g w g w --
