@@ -74,20 +74,6 @@
    2r>
    cr .s cr
    drop swap      ( s: a1 u? a2 )
-   ; \ move ;
-
-\ I'm not worried about move vs cmove vs cmove> semantics.
-\ If they're broken, it's nothing I broke.
-
-CREATE S1B8 8 ALLOT
-: s1b8 s1b8 8 ;
-CREATE S2B16 16 ALLOT
-: s2b16 s2b16 16 ;
-
-: RESET.SAFE.MOVE.DATA ( -- )
-   s" aaaaaaaa" s1b8 drop swap move 
-   s" bbbbbbbbbbbbbbbb" s2b16 drop swap move ;
-
-reset.safe.move.data
+   move ;
 
 \ End of TxbStrings.fth

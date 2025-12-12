@@ -124,10 +124,16 @@
    ansi.csi 'F' emit ;   \ cursor previous line
 
 \ Move the cursor to a specific row and column.
+\ 
 \ CSI row ; col H
+\
+\ ANSI.CUP.HOME is redundant with ANSI.CURSOR.HOME.
  
+: ansi.cup.home          
+   27 emit 'H' emit ;
+
 : ansi.cup ( row col -- )
-   2drop 1 abort" NOT IMPLEMENTED" ;
+   swap 27 emit . ';' emit 'H' emit ;
 
 \ erase screen current to end, beginning to current, or full.
 

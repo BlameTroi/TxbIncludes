@@ -21,12 +21,12 @@
 
 \ Definitions in this file:
 \
-\    3DUP                   ( n1 n2 n3 -- n1 n2 n3 n1 n2 n3 ) 
-\    CHAR+                  ( n -- n+1 )
-\    CHARS                  ( n -- n )
-\    NOT                   *( n -- f , 0= of n )
-\    STACK.DEPTH.TRACE      ( s-string -- )
-\    WITHIN?                ( n lo hi -- f , >=lo & <= hi )
+\    3DUP                ( n1 n2 n3 -- n1 n2 n3 n1 n2 n3 ) 
+\    CHAR+               ( n -- n+1 )
+\    CHARS               ( n -- n )
+\    NOT                *( n -- f , 0= of n )
+\    STACK.DEPTH.TRACE   ( s-string -- )
+\    WITHIN?             ( n lo hi -- f , >=lo & <= hi )
     
 \ Using NOT is a bad because some forths define it as INVERT
 \ while others define it as 0=. When I think NOT I think 0=.
@@ -46,16 +46,16 @@
 \ a consistent naming using ( and ] that won't be confused
 \ with compile time vs interpretation time use of [].
 \ 
-\ ANS WITHIN is n x y -- flag, x <= n < y, or [x, y )
+\ ANS WITHIN is n x y -- flag , x <= n < y, or [x, y )
 \ 
-\ I have seen n x y 1+ WITHIN in some code, but I like this
-\ definition from _Programming Forth_:
+\ I have seen n x y 1+ WITHIN in some code, but I prefer
+\ this definition from _Programming Forth_:
 
 [DEFINED] WITHIN? 0= [IF]
    : WITHIN? ( n low high -- flag , closed interval )
       1+ within ;
 [ELSE]
-      cr ." Using existing definition of WITHIN?." cr
+   cr ." Using existing definition of WITHIN?." cr
 [THEN]
 
 [DEFINED] 3DUP 0= [IF]

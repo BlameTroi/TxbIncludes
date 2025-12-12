@@ -3,6 +3,7 @@
    MARKER TEST-TXBWORDS
 
    REQUIRE TxbUnitTesting.fth
+   REQUIRE TxbWords.fth
 
 unit.test.reset
 
