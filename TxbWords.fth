@@ -25,13 +25,19 @@
 \    CHAR+               ( n -- n+1 )
 \    CHARS               ( n -- n )
 \    NOT                *( n -- f , 0= of n )
-\    STACK.DEPTH.TRACE   ( s-string -- )
+\    STACK.DEPTH.TRACER  ( s-string -- )
 \    WITHIN?             ( n lo hi -- f , >=lo & <= hi )
-    
-\ Using NOT is a bad because some forths define it as INVERT
+\    RANDOM              ( -- n , a random number )
+\    CHOOSE              ( n -- r , 0 <= r < n )
+\    TEXT                ( c -- , read input to c and copy to PAD )
+\    -TEXT               ( a-addr1 u a-addr2 -- f , a cell by cell compare )
+
+\ * Using NOT is a bad because some Forths define it as INVERT
 \ while others define it as 0=. When I think NOT I think 0=.
 \ If NOT is defined, override it to display a warning as it
-\ executes the implementation's NOT.
+\ executes the implementation's NOT. This should be a no-op as
+\ it won't show for prior definitions and I don't plan on using
+\ NOT in my code.
 
 [DEFINED] NOT [IF]
    cr
@@ -72,10 +78,11 @@
 
 \ This is a handy helper when I've dropped a stack entry.
 
-[DEFINED] STACK.DEPTH.TRACE [IF]
-   cr ." Redefining STACK.DEPTH.TRACE!" cr
+[DEFINED] STACK.DEPTH.TRACER [IF]
+   cr ." Redefining STACK.DEPTH.TRACER!" cr
 [THEN]
-: STACK.DEPTH.TRACE ( s-string -- , print string and depth )
+
+: STACK.DEPTH.TRACER ( s-string -- , print string and depth )
    cr type depth . cr ;
 
 \ CHARS and CHAR+ should be defined already. These assume a
@@ -83,13 +90,84 @@
 
 [DEFINED] CHARS 0= [IF]
    cr ." CHARS not defined, defaulting to 1*." cr
+
    : CHARS ; ( c-addr1 -- c-addr1 , no change )
 [THEN]
 
 [DEFINED] CHAR+ 0= [IF]
    cr ." CHAR+ not defined, defaulting to 1+." cr
+
    : CHAR+ ( c-addr1 -- caddr2 , add one )
       1+ ;
+[THEN]
+
+\ A random number generator (16-bit) from Starting Forth.
+\
+\ The RANDOM and CHOOSE in pforth use this algorithm but
+\ for 64-bit instead of 32-bit. 
+\
+\ For some reason I went for a 24-bit range instead of the full
+\ 64. I don't remember why but it works.
+
+[DEFINED] RANDOM 0= [IF]
+   cr ." RANDOM not defined, defining random support." cr
+
+   variable random-seed
+   here random-seed !
+
+   16777215 constant random-mask   ( 24 bit )
+
+   : random ( -- u )
+      random-seed @
+      31421 *
+      6927 +
+      random-mask and
+      dup random-seed !   ;
+
+   : choose ( u1 -- u2 , 0 <= u1 < u1 )
+      random-mask swap /           \ scale
+      random swap / ;
+[THEN]
+
+\ Text is an old word not in the new standard, this is what I
+\ think is a standard compliant implementation. The pad is always
+\ at least 84 bytes. I've added an overflow check but it probably
+\ isn't needed. The standard sets the area used by word as at
+\ least 33 bytes (1 length byte followed by space for up to 32
+\ characters I would expect).
+
+[DEFINED] TEXT 0= [IF]
+   cr ." TEXT not defined, using definition from Starting Forth." cr
+
+   : text ( c -- , delimiter for word )
+      pad 84 blank             \ clear
+      word                     \ next word by c
+      count 84 min             \ set up source with safe length
+      pad swap move ;          \ and move to pad
+[THEN]
+
+\ -TEXT is another old word from Starting Forth. It returns false
+\  if two strings are equal, < 0 for first less than second, > 0
+\  for second less than first. This is a bit like the C library
+\  cmp interface.
+\
+\ I don't expect to use this much, it's counts on aligned strings
+\ that are an even number of cells long and does a cell by cell
+\ compare.
+\
+\ This has passed quick testing.
+
+[DEFINED] -TEXT 0= [IF]
+   cr ." -TEXT not defined, using definition from Starting Forth." cr
+
+   : -text ( a-addr1 u a-addr2 -- flag )
+      2dup + swap
+      do
+         drop cell+
+         dup cell- @ i @ - dup
+         if dup abs / leave then
+      cell +loop
+      swap drop ;
 [THEN]
 
 \ End of TxbWords.fth

@@ -2,10 +2,9 @@
 
 ## Project Summary
 
-I'm (re)learning Forth for this year's _Advent of Code_ and need
-a place to collect utility words without worrying about proper
-library organization. Each include file will have a theme or
-focus.
+I'm (re)learning Forth for this year's _Advent of Code_ and need a
+place to collect utility words without worrying about proper library
+organization. Each include file will have a theme or focus.
 
 ## Contents
 
@@ -14,7 +13,7 @@ focus.
 | `TxbAnsiTerminal.fth` | Sends ANSI terminal control codes    |
 | `TxbStrings.fth`      | String related definitions           |
 | `TxbUnitTesting.fth`  | Unit test harness                    |
-| `TxbWords.fth`        | Definitions that don't fit elsewhere |
+| `TxbWords.fth`        | Definitions that don't fit elsewhere in code |
 
 Plus testing files. These are prefixed with "test-".
 
@@ -41,32 +40,23 @@ were options (`gforth`, `DuskOS`, `Min3rd`, `pforth`, ...).
 > You are in a maze of twisty little languages, all (almost)
 > alike.
 
-After experimenting I settled on
-[`pforth`](https://www.softsynth.com/pforth/)
-([repository](https://github.com/philburk/pforth/)). It builds on
-an ARM Mac and runs well. I've taken to running batch tests
-against `gforth` just to make sure I'm not drifting away from
-reasonable standards.
+After experimenting I settled on[`gforth`](https://gforth.org/)(
+[repository](https://git.savannah.gnu.org/git/gforth)). I was able
+to build 0.7.9_20251203 on an ARM Mac and it runs well. `pforth` is
+excellent but it doesn't have some of the standard words that I
+want.
 
-~~The only obvious area of incompatibility is file inclusion and
-compilation. Includes nest and the `anew`/`include?` mechanism
-works well as a `#pragma once` alternative.~~
-
-REQUIRE looks as if it will handle the dependencies between
-included files properly. It has the advantage of being both easy
-and portable. At least between `pforth` and `gforth`.
-
-Unfortunately, reloading a test does not reload the files being
-tested. I will continue to seek a good solution.
+REQUIRE may be the way to handle dependencies, but I'm not certain.
+I'll figure it out if I ever write anything I want to package and
+distribute.
 
 ## License
 
-My code is all public domain. If you want something more
-explicit, pick from either the MIT or the UNLICENSE as in the
-LICENSE file.
+My code is all public domain. If you want something more explicit,
+pick from either the MIT or the UNLICENSE as in the LICENSE file.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 Troy Brumley\
