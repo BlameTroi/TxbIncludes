@@ -1,4 +1,4 @@
-\ TxbWords.fth -- My common definitions -- T.Brumley
+\ TxbWords.fs -- My common definitions -- T.Brumley
 
 \ Definitions I have feel are worth having available in my
 \ code. They may already exist, been borrowed from code I've
@@ -17,7 +17,7 @@
 \ is required to tell you which definition of NOT it uses,
 \ but it's better not to use NOT.
 
-   MARKER TXBWORDS
+   marker TXBWORDS
 
 \ Definitions in this file:
 \
@@ -39,13 +39,13 @@
 \ it won't show for prior definitions and I don't plan on using
 \ NOT in my code.
 
-[DEFINED] NOT [IF]
+[DEFINED] not [IF]
    cr
    ." Danger! NOT is defined in this Forth. Adding warning."
    cr
-   : NOT
+   : not
       cr ." DANGER! Don't use NOT in your code!" cr
-      NOT ; 
+      not ; 
 [THEN]
 
 \ Add a closed interval range check. I can't come up with
@@ -57,14 +57,14 @@
 \ I have seen n x y 1+ WITHIN in some code, but I prefer
 \ this definition from _Programming Forth_:
 
-[DEFINED] WITHIN? 0= [IF]
-   : WITHIN? ( n low high -- flag , closed interval )
+[DEFINED] within? 0= [IF]
+   : within? ( n low high -- flag , closed interval )
       1+ within ;
 [ELSE]
    cr ." Using existing definition of WITHIN?." cr
 [THEN]
 
-[DEFINED] 3DUP 0= [IF]
+[DEFINED] 3dup 0= [IF]
 : 3dup ( n1 n2 n3 -- n1 n2 n3 n1 n2 n3 )
    dup >r -rot
    dup >r -rot
@@ -78,26 +78,26 @@
 
 \ This is a handy helper when I've dropped a stack entry.
 
-[DEFINED] STACK.DEPTH.TRACER [IF]
+[DEFINED] stack.depth.tracer [IF]
    cr ." Redefining STACK.DEPTH.TRACER!" cr
 [THEN]
 
-: STACK.DEPTH.TRACER ( s-string -- , print string and depth )
+: stack.depth.tracer ( s-string -- , print string and depth )
    cr type depth . cr ;
 
 \ CHARS and CHAR+ should be defined already. These assume a
 \ character is 1 byte unaligned.
 
-[DEFINED] CHARS 0= [IF]
+[DEFINED] chars 0= [IF]
    cr ." CHARS not defined, defaulting to 1*." cr
 
-   : CHARS ; ( c-addr1 -- c-addr1 , no change )
+   : chars ; ( c-addr1 -- c-addr1 , no change )
 [THEN]
 
-[DEFINED] CHAR+ 0= [IF]
+[DEFINED] char+ 0= [IF]
    cr ." CHAR+ not defined, defaulting to 1+." cr
 
-   : CHAR+ ( c-addr1 -- caddr2 , add one )
+   : char+ ( c-addr1 -- caddr2 , add one )
       1+ ;
 [THEN]
 
@@ -109,7 +109,7 @@
 \ For some reason I went for a 24-bit range instead of the full
 \ 64. I don't remember why but it works.
 
-[DEFINED] RANDOM 0= [IF]
+[DEFINED] random 0= [IF]
    cr ." RANDOM not defined, defining random support." cr
 
    variable random-seed
@@ -136,7 +136,7 @@
 \ least 33 bytes (1 length byte followed by space for up to 32
 \ characters I would expect).
 
-[DEFINED] TEXT 0= [IF]
+[DEFINED] text 0= [IF]
    cr ." TEXT not defined, using definition from Starting Forth." cr
 
    : text ( c -- , delimiter for word )
@@ -157,7 +157,7 @@
 \
 \ This has passed quick testing.
 
-[DEFINED] -TEXT 0= [IF]
+[DEFINED] -text 0= [IF]
    cr ." -TEXT not defined, using definition from Starting Forth." cr
 
    : -text ( a-addr1 u a-addr2 -- flag )
@@ -170,4 +170,4 @@
       swap drop ;
 [THEN]
 
-\ End of TxbWords.fth
+\ End of TxbWords.fs

@@ -1,15 +1,15 @@
-\ TxbStrings.fth -- My string helpers -- T.Brumley
+\ TxbStrings.fs -- My string helpers -- T.Brumley
 
-   MARKER TXBSTRINGS
+   marker TXBSTRINGS
 
-   REQUIRE TxbWords.fth
-   REQUIRE TxbUnitTesting.fth
+   require TxbWords.fs
+   require TxbUnitTesting.fs
 
-\ Strings are character aligned but CREATE should always
+\ Strings are character aligned but create should always
 \ align data space storage. VARIABLE could be used but it
 \ allocates one cell. I prefer:
 \
-\   CREATE somestring 16 CHARS ALLOT
+\   create somestring 16 CHARS ALLOT
 \
 \ to:
 \
@@ -25,7 +25,7 @@
 \
 \ This leads to the following coding patterns:
 \
-\ CREATE var n allot
+\ create var n allot
 \ : var ( -- c-addr u , var address and alloted length )
 \    var n ;
 \ 
@@ -58,12 +58,12 @@
 \
 \ I will use MOVE until I see a need for CMOVE and CMOVE>.
 
-\ SAFE.MOVE copies up to u2 characters from addr1 to addr2.
+\ safe-move copies up to u2 characters from addr1 to addr2.
 \ If u1 < u2, only u1 characters are copied. If u2 > u1,
 \ only u1 characters are copied and the remaining portion
 \ at addr2 is left unchanged.
 
-: SAFE.MOVE ( c-addr1 u1 c-addr2 u2 -- )
+: safe-move ( c-addr1 u1 c-addr2 u2 -- )
    2dup 2>r       ( s: a1 u1 a2 u2       r: a2 u2 )
    swap drop 2dup ( s: a1 u1 u2 u1 u2    r: a2 u2 )
    > if           ( s: a1 u1 u2 u1>u2    r: a2 u2 )
@@ -76,4 +76,4 @@
    drop swap      ( s: a1 u? a2 )
    move ;
 
-\ End of TxbStrings.fth
+\ End of TxbStrings.fs

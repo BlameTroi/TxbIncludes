@@ -10,25 +10,25 @@ organization. Each include file will have a theme or focus.
 
 | File                  | Description                          |
 | :-------------------- | :----------------------------------- |
-| `TxbAnsiTerminal.fth` | Sends ANSI terminal control codes    |
-| `TxbStrings.fth`      | String related definitions           |
-| `TxbUnitTesting.fth`  | Unit test harness                    |
-| `TxbWords.fth`        | Definitions that don't fit elsewhere in code |
+| `TxbAnsiTerminal.fs` | Sends ANSI terminal control codes    |
+| `TxbStrings.fs`      | String related definitions           |
+| `TxbUnitTesting.fs`  | Unit test harness                    |
+| `TxbWords.fs`        | Definitions that don't fit elsewhere in code |
 
 Plus testing files. These are prefixed with "test-".
 
-The testing files are self contained. Each REQUIREs the unit test
+The testing files are self contained. Each requires the unit test
 harness and the definitions it tests.
 
 The preamble for a testing file is:
 
 ```Forth
-   MARKER TEST-TXB??????
+   marker TEST-TXB??????
 
-   REQUIRE TxbUnitTesting.fth
-   Require Txb??????.fth
+   require TxbUnitTesting.fs
+   Require Txb??????.fs
 
-   unit.test.reset
+   unit-test-reset
 ```
 
 ## Which Forth and How I Forth
@@ -46,7 +46,7 @@ to build 0.7.9_20251203 on an ARM Mac and it runs well. `pforth` is
 excellent but it doesn't have some of the standard words that I
 want.
 
-REQUIRE may be the way to handle dependencies, but I'm not certain.
+require may be the way to handle dependencies, but I'm not certain.
 I'll figure it out if I ever write anything I want to package and
 distribute.
 
