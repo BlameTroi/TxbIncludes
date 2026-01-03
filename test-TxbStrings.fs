@@ -1,7 +1,5 @@
 \ test-TxbStrings.fs -- Test string helpers -- T.Brumley
 
-   marker TEST-TXBSTRINGS
-
    require TxbUnitTesting.fs
    require TxbStrings.fs
 

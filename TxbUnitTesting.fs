@@ -1,9 +1,6 @@
 \ TxbUnitTesting.fs -- Simple unit testing -- T.Brumley
 
-   marker TXBUNITTESTING
-
    require TxbWords.fs
-
    require TxbAnsiTerminal.fs
 
 \ A slowly growing minimalistic unit testing vocabulary.

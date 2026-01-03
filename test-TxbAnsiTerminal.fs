@@ -1,7 +1,5 @@
 \ test-TxbAnsiTerminal.fs -- Test Ansi Controls -- T.Brumley
 
-   marker TEST-TXBANSITERMINAL
-
    require TxbAnsiTerminal.fs
 
 \ This is very limited. I can't get the cursor controls to

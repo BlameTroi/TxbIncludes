@@ -1,7 +1,5 @@
 \ TxbStrings.fs -- My string helpers -- T.Brumley
 
-   marker TXBSTRINGS
-
    require TxbWords.fs
    require TxbUnitTesting.fs
 

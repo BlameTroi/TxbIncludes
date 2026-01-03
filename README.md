@@ -23,7 +23,6 @@ harness and the definitions it tests.
 The preamble for a testing file is:
 
 ```Forth
-   marker TEST-TXB??????
 
    require TxbUnitTesting.fs
    Require Txb??????.fs

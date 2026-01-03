@@ -1,7 +1,5 @@
 \ test-TxbWords.fs -- My common definitions -- T.Brumley
 
-   marker TEST-TXBWORDS
-
    require TxbUnitTesting.fs
    require TxbWords.fs
 

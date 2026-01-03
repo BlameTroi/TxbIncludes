@@ -1,7 +1,5 @@
 \ TxbAnsiTerminal.fs -- Ansi Terminal Control -- T.Brumley
 
-   marker TXBANSITERMINAL
-
 \ Colored text in terminals means using ANSI control
 \ sequences. While mining some of my Pascal ANSI support
 \ code I found the best/most readable documentation for

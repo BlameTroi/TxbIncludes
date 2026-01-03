@@ -17,15 +17,13 @@
 \ is required to tell you which definition of NOT it uses,
 \ but it's better not to use NOT.
 
-   marker TXBWORDS
-
 \ Definitions in this file:
 \
 \    3DUP                ( n1 n2 n3 -- n1 n2 n3 n1 n2 n3 ) 
 \    CHAR+               ( n -- n+1 )
 \    CHARS               ( n -- n )
 \    NOT                *( n -- f , 0= of n )
-\    STACK.DEPTH.TRACER  ( s-string -- )
+\    STACK-DEPTH-TRACER  ( s-string -- )
 \    WITHIN?             ( n lo hi -- f , >=lo & <= hi )
 \    RANDOM              ( -- n , a random number )
 \    CHOOSE              ( n -- r , 0 <= r < n )
@@ -79,10 +77,10 @@
 \ This is a handy helper when I've dropped a stack entry.
 
 [DEFINED] stack.depth.tracer [IF]
-   cr ." Redefining STACK.DEPTH.TRACER!" cr
+   cr ." Redefining STACK-DEPTH-TRACER!" cr
 [THEN]
 
-: stack.depth.tracer ( s-string -- , print string and depth )
+: stack-depth-tracer ( s-string -- , print string and depth )
    cr type depth . cr ;
 
 \ CHARS and CHAR+ should be defined already. These assume a
