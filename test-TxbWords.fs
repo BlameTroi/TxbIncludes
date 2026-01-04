@@ -1,7 +1,7 @@
 \ test-TxbWords.fs -- My common definitions -- T.Brumley
 
-   require TxbUnitTesting.fs
-   require TxbWords.fs
+require TxbUnitTesting.fs
+require TxbWords.fs
 
 unit-test-reset
 

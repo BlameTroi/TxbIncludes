@@ -25,7 +25,7 @@ The preamble for a testing file is:
 ```Forth
 
    require TxbUnitTesting.fs
-   Require Txb??????.fs
+   require Txb??????.fs
 
    unit-test-reset
 ```

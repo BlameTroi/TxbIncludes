@@ -1,7 +1,10 @@
 \ TxbUnitTesting.fs -- Simple unit testing -- T.Brumley
 
-   require TxbWords.fs
-   require TxbAnsiTerminal.fs
+require TxbWords.fs
+require TxbAnsiTerminal.fs
+
+\ TODO: Can/should I switch to ttester? See at:
+\ https://forth-standard.org/standard/testsuite
 
 \ A slowly growing minimalistic unit testing vocabulary.
 \
@@ -63,7 +66,8 @@ variable unit-stack        ( count stack not cleared )
    s" Errored " type-cyan unit-errored @ . cr
    ." Total of " unit-failed @ unit-passed @ + . ." tests." cr
    unit-stack @ if
-      s" Times the stack was not cleared " type-red unit-stack @ . cr
+      s" Times the stack was not cleared "
+      type-red unit-stack @ . cr
    then ;
     
 : unit-test-passed ( -- )

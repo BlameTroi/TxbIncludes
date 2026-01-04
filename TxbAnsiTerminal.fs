@@ -1,10 +1,9 @@
 \ TxbAnsiTerminal.fs -- Ansi Terminal Control -- T.Brumley
 
-\ Colored text in terminals means using ANSI control
-\ sequences. While mining some of my Pascal ANSI support
-\ code I found the best/most readable documentation for
-\ ANSI controls at:
-\
+\ Colored text in terminals means using ANSI control sequences.
+\ While mining some of my Pascal ANSI support code I found the
+\ best/most readable documentation for ANSI controls at:
+
 \ https://nicholas-morris.com/articles/ansi-codes
 \
 \ I've added that to https://vt100.net/ in my bookmarks.
@@ -14,13 +13,12 @@
 \
 \ Notes:
 \
-\ - Syntax: CHAR is [CHAR] in compiled code. I found that
-\   I could replace this by wrapping a character with
-\   apostrophes.
+\ - Syntax: CHAR is [CHAR] in compiled code. I found that I
+\   could replace this by wrapping a character with 'c'.
 \
-\ - Performance is not an issue, but I wondered about
-\   building all these "char emit" chains into string
-\   constants. I don't think that would buy me anything.
+\ - Performance is not an issue, but I wondered about building
+\   all these "char emit" chains into string constants. I don't
+\   think that would buy me anything.
 \
 \ TODO:
 \
@@ -317,6 +315,7 @@
        
 \ These render a string in color and then return to default
 \ settings.
+
 \ These ( str len -- )
 
 : type-red

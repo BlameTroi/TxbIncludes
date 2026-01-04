@@ -1,11 +1,10 @@
 \ TxbStrings.fs -- My string helpers -- T.Brumley
 
-   require TxbWords.fs
-   require TxbUnitTesting.fs
+require TxbWords.fs
 
-\ Strings are character aligned but create should always
-\ align data space storage. VARIABLE could be used but it
-\ allocates one cell. I prefer:
+\ Strings are character aligned but create should always align
+\ data space storage. VARIABLE could be used but it allocates
+\ one cell. I prefer:
 \
 \   create somestring 16 CHARS ALLOT
 \
@@ -15,13 +14,21 @@
 \
 \ As the intended length is more clear.
 \ 
-\ From reading the standard counted strings are "old style"
-\ and since Forth 94 strings on the stack are expected to
-\ be c-addr u. I'll avoid C" in my new code.
+\ From reading the standard counted strings are "old style" and
+\ since Forth 94 strings on the stack are expected to be c-addr
+\ u. I still see C" strings in the standard and but will
+\ generally use S" strings.
 \ 
-\ Anytime I want a string I almost always want its length.
+\ Anytime I want a string I almost always want its length. An
+\ S" gives that automatically, a C" requires COUNT.
+\
+\ C" is compile only, S" can be either but at the command line
+\ the string is transient.
 \
 \ This leads to the following coding patterns:
+\
+\ TODO: There's a better way to do this using CREATE-DOES>.
+\       Update and add the new defining word here.
 \
 \ create var n allot
 \ : var ( -- c-addr u , var address and alloted length )
@@ -33,8 +40,8 @@
 \ Given strings s1 and s2, where length s1 <= length s2 and
 \ the shawoing behavior above:
 \
-\ Move s1 to s2 from low address to high for the length
-\ of s1, and the rest of s2 is unchanged. ( MVC S2,S1 ): 
+\ Move s1 to s2 from low address to high for the length of s1,
+\ and the rest of s2 is unchanged. ( MVC S2,S1 ):
 \ 
 \ s1       ( -- @s1 l1 )
 \ s2       ( -- @s1 l1 @s2 l2 )
@@ -46,20 +53,20 @@
 \ 
 \ s1 s2 DROP SWAP CMOVE
 \
-\ CMOVE and CMOVE> allow for propogation as an S360 MVC.
-\ The result of MOVE is as if s1 -> temp buffer -> s2. This
-\ is consistent with memmove() from clib.
+\ CMOVE and CMOVE> allow for propogation as an S360 MVC. The
+\ result of MOVE is as if s1 -> temp buffer -> s2. This is
+\ consistent with memmove() from clib.
 \
 \ Safe moves do not overflow destination fields nor do they
-\ modify trailing bytes of the destination of the source
-\ length is less than the destination length.
-\
+\ modify trailing bytes of the destination of the source length
+\ is less than the destination length.
+
 \ I will use MOVE until I see a need for CMOVE and CMOVE>.
 
 \ safe-move copies up to u2 characters from addr1 to addr2.
-\ If u1 < u2, only u1 characters are copied. If u2 > u1,
-\ only u1 characters are copied and the remaining portion
-\ at addr2 is left unchanged.
+\ If u1 < u2, only u1 characters are copied. If u2 > u1, only
+\ u1 characters are copied and the remaining portion at addr2
+\ is left unchanged.
 
 : safe-move ( c-addr1 u1 c-addr2 u2 -- )
    2dup 2>r       ( s: a1 u1 a2 u2       r: a2 u2 )
@@ -73,5 +80,16 @@
    cr .s cr
    drop swap      ( s: a1 u? a2 )
    move ;
+
+\ Copy a string to a counted string. I could have just copied
+\ the s-string to a variable and the length into another, but
+\ this was more fun.
+
+: s$>c$ ( s-addr s-u c-addr c-u -- )
+   2dup erase                      \ clear work, s su c cu
+   1- swap 1+ swap                 \ s u c1 u1 adjust for count
+   rot min                         \ s c m
+   2dup swap 1- c!                 \ s c m count in dest
+   move ;                          \ and move
 
 \ End of TxbStrings.fs
