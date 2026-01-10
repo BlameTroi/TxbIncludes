@@ -130,7 +130,7 @@ variable random-seed   here random-seed !
 84 value pad-usable-len                 \ 84 is a minimum
 : text ( c -- , delimiter for word )
    word count pad-usable-len min        \ c-addr u
-   pad dup pad-usable erase swap move ; \ clear & copy to pad
+   pad dup pad-usable-len erase swap move ; \ move to pad 
 [THEN]
 
 \ `-TEXT` is another old word from Starting Forth. It returns
