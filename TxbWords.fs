@@ -29,6 +29,7 @@
 \    CHOOSE              ( n -- r , 0 <= r < n )
 \    TEXT                ( c -- , accept to c, copy to PAD )
 \    -TEXT               ( a-addr1 u a-addr2 -- f , by cells )
+\    READ-LINE-SKIP-EMPTY  ( read-line that eats empty lines )
 
 \ * Using NOT is a bad because some Forths define it as INVERT
 \ while others define it as 0=. When I think NOT I think 0=.
@@ -114,17 +115,21 @@ variable random-seed   here random-seed !
    random swap / ;
 [THEN]
 
-\ Text is an old word not in the new standard, this is what I
-\ think is a standard compliant implementation. The pad is
-\ always at least 84 bytes. I've added an overflow check but it
-\ probably isn't needed. The standard sets the area used by
-\ word as at least 33 bytes (1 length byte followed by space
-\ for up to 32 characters I would expect).
+\ TEXT is an old word not in the new standard. I'm not sure why
+\ it was dropped, but it could be because definitions use the
+\ PAD and the standard is that no standard definitions may
+\ change the PAD.
+\
+\ The PAD is must be at least 84 bytes in length and so this
+\ version of TEXT will not read anything longer than 84 bytes.
+\
+\ WORD's buffer must be at least 33 bytes in length. One
+\ length byte followed by room for at least 32 characters.
 
 [UNDEFINED] text [IF]
-84 value pad-usable   \ 84 is a minimum
+84 value pad-usable-len                 \ 84 is a minimum
 : text ( c -- , delimiter for word )
-   word count pad-usable min            \ c-addr u
+   word count pad-usable-len min        \ c-addr u
    pad dup pad-usable erase swap move ; \ clear & copy to pad
 [THEN]
 
@@ -147,5 +152,18 @@ variable random-seed   here random-seed !
    cell +loop
    swap drop ;
 [THEN]
+
+\ This is a version of read-line that eats blank lines. Its
+\ interface is the same as read-line.
+
+: read-line-skip-empty ( c-addr u1 fd -- u2 flag ior )
+  { ubuf ulen ufd }
+  begin
+    ubuf ulen ufd read-line { rlen rgot rior }
+          rior if true else
+       rgot 0= if true else
+               rlen then then
+  until
+  rlen rgot rior ;
 
 \ End of TxbWords.fs
